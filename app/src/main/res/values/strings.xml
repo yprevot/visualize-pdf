@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Visor PDF</string>
+    <string name="open_pdf">Abrir PDF</string>
+    <string name="no_pdf_selected">No se ha seleccionado ningún PDF</string>
+    <string name="no_pdf_desc">Selecciona un archivo PDF de tu dispositivo o abre un documento de muestra para comenzar a leer.</string>
+    <string name="select_file">Seleccionar Archivo</string>
+    <string name="open_sample">Ver Documento de Muestra</string>
+    <string name="page_format">Página %1$d de %2$d</string>
+    <string name="jump_to_page">Ir a la página</string>
+    <string name="enter_page_number">Ingresa un número entre 1 y %1$d</string>
+    <string name="go">Ir</string>
+    <string name="cancel">Cancelar</string>
+    <string name="share">Compartir</string>
+    <string name="error_loading_pdf">Error al abrir el archivo PDF. Asegúrate de que el archivo no esté protegido con contraseña o dañado.</string>
+    <string name="sample_pdf_title">Guía de Inicio Rápido</string>
+    <string name="zoom_in">Aumentar Zoom</string>
+    <string name="zoom_out">Disminuir Zoom</string>
+    <string name="reset_zoom">Restablecer Zoom</string>
+</resources>
