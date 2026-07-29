@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Visor PDF</string>
+    <string name="app_name">Visualize PDF</string>
     <string name="open_pdf">Abrir PDF</string>
     <string name="no_pdf_selected">No se ha seleccionado ningún PDF</string>
     <string name="no_pdf_desc">Selecciona un archivo PDF de tu dispositivo o abre un documento de muestra para comenzar a leer.</string>
