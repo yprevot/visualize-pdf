@@ -14,9 +14,9 @@
     <com.example.androidpdfviewwer.ZoomableImageView
         android:id="@+id/iv_pdf_page"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
+        android:layout_height="500dp"
+        android:background="#E0E0E0"
         android:contentDescription="PDF Page"
-        android:scaleType="fitCenter" />
+        android:scaleType="matrix" />
 
 </com.google.android.material.card.MaterialCardView>

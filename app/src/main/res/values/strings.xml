@@ -12,6 +12,12 @@
     <string name="cancel">Cancelar</string>
     <string name="share">Compartir</string>
     <string name="error_loading_pdf">Error al abrir el archivo PDF. Asegúrate de que el archivo no esté protegido con contraseña o dañado.</string>
+    <string name="error_password">Este PDF está protegido con contraseña. Introdúcela para abrirlo.</string>
+    <string name="error_corrupt">El archivo parece dañado o tiene un formato no compatible.</string>
+    <string name="error_too_large">El documento es demasiado grande para este dispositivo.</string>
+    <string name="error_oom">Memoria insuficiente para renderizar este PDF.</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="open">Abrir</string>
     <string name="sample_pdf_title">Guía de Inicio Rápido</string>
     <string name="zoom_in">Aumentar Zoom</string>
     <string name="zoom_out">Disminuir Zoom</string>
