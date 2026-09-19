@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "com.example.androidpdfviewwer"
-    compileSdk = 35
+    // core-ktx 1.19.0 requires compiling against API 37+ (AAR metadata check).
+    // targetSdk stays at 35 (Play requirement); compileSdk may exceed it.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.androidpdfviewwer"
