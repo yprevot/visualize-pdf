@@ -9,102 +9,174 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.util.LruCache
+import android.util.Size
 import java.io.File
-import java.io.FileOutputStream
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
-class PdfRenderEngine(private val context: Context) {
+/**
+ * Native engine (PdfRenderer) hardened:
+ * - copies content:// to seekable cache file (Drive/Gmail fix)
+ * - caps bitmap size to avoid OOM / max-texture black pages
+ * - maps password/corrupt errors instead of generic false
+ * - cancelable renders + shutdown() to avoid leaks
+ *
+ * Kept as fallback when Pdfium is unavailable. Primary path is [PdfiumEngine].
+ */
+class PdfRenderEngine(private val context: Context) : PdfEngine {
 
     private var fileDescriptor: ParcelFileDescriptor? = null
     private var pdfRenderer: PdfRenderer? = null
+    private var cacheFile: File? = null
 
     private val executor = Executors.newFixedThreadPool(2)
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val pending = ConcurrentHashMap<Int, Future<*>>()
 
-    // LRU Memory Cache to keep rendered pages fast without crashing on memory limit
-    private val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
-    private val cacheSize = maxMemory / 8
-    private val bitmapCache = object : LruCache<Int, Bitmap>(cacheSize) {
-        override fun sizeOf(key: Int, value: Bitmap): Int {
-            return value.byteCount / 1024
+    private val maxMemoryKb = (Runtime.getRuntime().maxMemory() / 1024).toInt()
+    private val cacheSizeKb = (maxMemoryKb / 8).coerceAtMost(32 * 1024)
+    private val bitmapCache = object : LruCache<Int, Bitmap>(cacheSizeKb) {
+        override fun sizeOf(key: Int, value: Bitmap): Int = value.byteCount / 1024
+        override fun entryRemoved(evicted: Boolean, key: Int, oldValue: Bitmap, newValue: Bitmap?) {
+            // Don't recycle here: the ImageView may still hold it. Let GC handle it.
         }
     }
+    private val pageSizes = ConcurrentHashMap<Int, Size>()
 
-    var pageCount: Int = 0
+    override var pageCount: Int = 0
         private set
 
-    fun openPdf(uri: Uri): Boolean {
+    override fun openPdf(uri: Uri, password: String?): PdfOpenResult {
         close()
         return try {
-            fileDescriptor = if (uri.scheme == "file") {
-                val file = File(uri.path ?: return false)
-                ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+            val seekable: File = PdfFileHelper.copyToCache(context, uri)
+                ?: return PdfOpenResult.Failure(PdfError.IO)
+            // Only delete previous temp copies, never the original file:// source.
+            if (seekable != cacheFile && seekable.parentFile == context.cacheDir) {
+                cacheFile = seekable
+            } else if (seekable.parentFile != context.cacheDir) {
+                cacheFile = null
             } else {
-                context.contentResolver.openFileDescriptor(uri, "r")
+                cacheFile = seekable
             }
-
-            if (fileDescriptor != null) {
-                pdfRenderer = PdfRenderer(fileDescriptor!!)
-                pageCount = pdfRenderer?.pageCount ?: 0
-                true
+            fileDescriptor = ParcelFileDescriptor.open(seekable, ParcelFileDescriptor.MODE_READ_ONLY)
+            val fd = fileDescriptor ?: return PdfOpenResult.Failure(PdfError.IO)
+            try {
+                pdfRenderer = PdfRenderer(fd)
+            } catch (e: SecurityException) {
+                close()
+                return PdfOpenResult.Failure(PdfError.PASSWORD_REQUIRED, e)
+            } catch (e: java.io.IOException) {
+                close()
+                val msg = (e.message ?: "").lowercase()
+                return if ("password" in msg || "encrypt" in msg) {
+                    PdfOpenResult.Failure(PdfError.PASSWORD_REQUIRED, e)
+                } else {
+                    PdfOpenResult.Failure(PdfError.CORRUPT, e)
+                }
+            }
+            pageCount = pdfRenderer?.pageCount ?: 0
+            if (pageCount <= 0) {
+                close()
+                PdfOpenResult.Failure(PdfError.CORRUPT)
             } else {
-                false
+                PdfOpenResult.Success(pageCount)
             }
+        } catch (e: OutOfMemoryError) {
+            close()
+            PdfOpenResult.Failure(PdfError.OOM, Exception(e))
         } catch (e: Exception) {
             e.printStackTrace()
             close()
-            false
+            PdfOpenResult.Failure(PdfError.UNKNOWN, e)
         }
     }
 
-    fun renderPage(pageIndex: Int, targetWidth: Int, onRendered: (Bitmap) -> Unit) {
+    /** Legacy Boolean API used by older callers. */
+    fun openPdfLegacy(uri: Uri): Boolean = openPdf(uri) is PdfOpenResult.Success
+
+    override fun pageAspect(pageIndex: Int): Float? {
+        pageSizes[pageIndex]?.let { return it.width.toFloat() / it.height.toFloat() }
+        return null
+    }
+
+    override fun renderPage(pageIndex: Int, targetWidth: Int, onRendered: (Bitmap) -> Unit) {
         if (pageIndex < 0 || pageIndex >= pageCount || pdfRenderer == null) return
 
-        val cachedBitmap = bitmapCache.get(pageIndex)
-        if (cachedBitmap != null && !cachedBitmap.isRecycled) {
-            onRendered(cachedBitmap)
-            return
+        bitmapCache.get(pageIndex)?.let { cached ->
+            if (!cached.isRecycled) {
+                onRendered(cached)
+                return
+            }
         }
+        pending[pageIndex]?.cancel(true)
 
-        executor.execute {
-            val renderer = pdfRenderer ?: return@execute
+        val future = executor.submit {
+            val renderer = pdfRenderer ?: return@submit
             synchronized(renderer) {
+                // Renderer may have been closed while queued.
+                if (pdfRenderer !== renderer) return@synchronized
                 try {
                     val page = renderer.openPage(pageIndex)
-                    val pageWidth = page.width
-                    val pageHeight = page.height
+                    try {
+                        val srcW = page.width
+                        val srcH = page.height
+                        if (srcW <= 0 || srcH <= 0) return@synchronized
+                        pageSizes.putIfAbsent(pageIndex, Size(srcW, srcH))
 
-                    val width = if (targetWidth > 0) targetWidth else pageWidth
-                    val height = (width * pageHeight) / pageWidth
-
-                    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                    bitmap.eraseColor(Color.WHITE)
-
-                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                    page.close()
-
-                    bitmapCache.put(pageIndex, bitmap)
-
-                    mainHandler.post {
-                        onRendered(bitmap)
+                        val (width, height) = cappedSize(srcW, srcH, targetWidth)
+                        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                        bitmap.eraseColor(Color.WHITE)
+                        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        bitmapCache.put(pageIndex, bitmap)
+                        mainHandler.post { onRendered(bitmap) }
+                    } finally {
+                        try { page.close() } catch (_: Exception) {}
                     }
                 } catch (e: Exception) {
+                    if (Thread.currentThread().isInterrupted) return@synchronized
                     e.printStackTrace()
+                } finally {
+                    pending.remove(pageIndex)
                 }
             }
         }
+        pending[pageIndex] = future
     }
 
-    fun close() {
+    override fun cancelPending(pageIndex: Int) {
+        pending.remove(pageIndex)?.cancel(true)
+    }
+
+    internal fun cappedSize(srcW: Int, srcH: Int, targetWidth: Int): Pair<Int, Int> =
+        computeCappedSize(srcW, srcH, targetWidth)
+
+    override fun close() {
         try {
+            pending.values.forEach { it.cancel(true) }
+            pending.clear()
             bitmapCache.evictAll()
-            pdfRenderer?.close()
+            pageSizes.clear()
+            try { pdfRenderer?.close() } catch (_: Exception) {}
             pdfRenderer = null
-            fileDescriptor?.close()
+            try { fileDescriptor?.close() } catch (_: Exception) {}
             fileDescriptor = null
+            // Delete only our temp copy.
+            cacheFile?.let { f ->
+                if (f.parentFile == context.cacheDir && f.name.startsWith("pdf_")) {
+                    try { f.delete() } catch (_: Exception) {}
+                }
+            }
+            cacheFile = null
             pageCount = 0
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    override fun shutdown() {
+        close()
+        executor.shutdownNow()
     }
 }
