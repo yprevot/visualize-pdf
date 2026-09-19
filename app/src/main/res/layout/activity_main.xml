@@ -5,7 +5,8 @@
     android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true">
 
     <!-- Top Material Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
