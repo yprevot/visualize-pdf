@@ -1,10 +1,14 @@
+// NOTE (AGP 9+): no Kotlin plugin here — AGP 9 compiles Kotlin natively
+// and derives the Kotlin jvmTarget from compileOptions (Java 17).
 plugins {
     alias(libs.plugins.android.application)
 }
 
 android {
     namespace = "com.example.androidpdfviewwer"
-    compileSdk = 35
+    // core-ktx 1.19.0 requires compiling against API 37+ (AAR metadata check).
+    // targetSdk stays at 35 (Play requirement); compileSdk may exceed it.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.androidpdfviewwer"
@@ -37,9 +41,14 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.material)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.pdf.viewer)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

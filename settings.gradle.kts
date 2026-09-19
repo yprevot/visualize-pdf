@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AndroidPDFViewwer"
+rootProject.name = "VisualizePDF"
 include(":app")
