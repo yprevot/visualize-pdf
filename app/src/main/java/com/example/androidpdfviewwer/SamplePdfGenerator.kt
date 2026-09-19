@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
-import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 
@@ -144,15 +143,16 @@ object SamplePdfGenerator {
         // Save file to cache dir
         val sampleFile = File(context.cacheDir, "sample_document.pdf")
         try {
-            val fos = FileOutputStream(sampleFile)
-            pdfDocument.writeTo(fos)
-            fos.close()
+            FileOutputStream(sampleFile).use { fos ->
+                pdfDocument.writeTo(fos)
+            }
             pdfDocument.close()
 
-            return Uri.fromFile(sampleFile)
+            // FileProvider URI: safe to open internally and to share (no FileUriExposedException).
+            return PdfFileHelper.fileProviderUri(context, sampleFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            pdfDocument.close()
+            try { pdfDocument.close() } catch (_: Exception) {}
             return null
         }
     }

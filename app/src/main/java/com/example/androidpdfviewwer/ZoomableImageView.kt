@@ -40,6 +40,9 @@ class ZoomableImageView @JvmOverloads constructor(
     private val scaleDetector: ScaleGestureDetector = ScaleGestureDetector(context, this)
     private val gestureDetector: GestureDetector
 
+    /** Called when a pinch or double-tap zoom settles, with the new scale. */
+    var onZoomEnd: ((Float) -> Unit)? = null
+
     init {
         super.setClickable(true)
         imageMatrix = matrix
@@ -51,6 +54,9 @@ class ZoomableImageView @JvmOverloads constructor(
                 val targetScale = if (saveScale > 1.5f) minScale else 2.5f
                 val factor = targetScale / saveScale
                 zoomTo(factor, e.x, e.y)
+                onZoomEnd?.invoke(saveScale)
+                // Steal the gesture only when we actually zoom in.
+                parent?.requestDisallowInterceptTouchEvent(saveScale > minScale)
                 return true
             }
         })
@@ -120,6 +126,9 @@ class ZoomableImageView @JvmOverloads constructor(
         gestureDetector.onTouchEvent(event)
         scaleDetector.onTouchEvent(event)
 
+        val isZooming = saveScale > minScale + 0.01f || scaleDetector.isInProgress ||
+            event.pointerCount > 1
+
         val currentPoint = PointF(event.x, event.y)
 
         when (event.action and MotionEvent.ACTION_MASK) {
@@ -146,13 +155,15 @@ class ZoomableImageView @JvmOverloads constructor(
             }
 
             MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
-            MotionEvent.ACTION_UP -> mode = Mode.NONE
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> mode = Mode.NONE
         }
 
         imageMatrix = matrix
-        // Allow parent RecyclerView to scroll vertically when zoomed out completely
-        parent?.requestDisallowInterceptTouchEvent(saveScale > minScale)
-        return true
+        // Let RecyclerView scroll vertically when fully zoomed out; only steal
+        // touches while zoomed or pinching.
+        parent?.requestDisallowInterceptTouchEvent(isZooming || mode == Mode.ZOOM)
+        // Return false when not zoomed so the parent can take over vertical scroll.
+        return isZooming || mode != Mode.NONE
     }
 
     override fun onScale(detector: ScaleGestureDetector): Boolean {
@@ -183,7 +194,10 @@ class ZoomableImageView @JvmOverloads constructor(
         return true
     }
 
-    override fun onScaleEnd(detector: ScaleGestureDetector) {}
+    override fun onScaleEnd(detector: ScaleGestureDetector) {
+        mode = Mode.NONE
+        onZoomEnd?.invoke(saveScale)
+    }
 
     private fun fixTranslation() {
         val rect = RectF()
