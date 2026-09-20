@@ -3,6 +3,8 @@ name: Android CI/CD
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - 'v*' # Se ejecuta al crear un tag (ej. v1.0.0)
   pull_request:
     branches: [ "main" ]
 
@@ -12,10 +14,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v7
+      uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v6
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -29,3 +31,36 @@ jobs:
 
     - name: Run Lint Vital Release Check
       run: ./gradlew lintVitalRelease
+
+    # Compila el APK en modo Release (optimizado y listo para distribuir)
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+
+    # Sube el APK como un "Artefacto" que puedes descargar desde la pestaña "Actions" de GitHub
+    - name: Upload APK as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+  # Este trabajo SOLO se ejecuta cuando creas un Tag (ej. v1.0)
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    # Necesario para que GitHub Actions pueda crear el Release en el repositorio
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Download APK from build
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app-release-unsigned.apk
+          generate_release_notes: true
