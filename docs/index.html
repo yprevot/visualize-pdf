@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualize PDF — Visor de PDF Rápido y Seguro para Android</title>
+  <meta name="description" content="Visualizador de PDF moderno, ligero y ultrarrápido para Android con motor híbrido Pdfium y PdfRenderer. Cumplimiento Google Play y descarga directa de APK.">
+  <meta name="theme-color" content="#1976D2">
+  <link rel="icon" type="image/webp" href="assets/icon.webp">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Visualize PDF — Visor de PDF para Android">
+  <meta property="og:description" content="Descarga el APK más reciente de Visualize PDF. Motor híbrido, cero permisos invasivos y rendimiento nativo.">
+  <meta property="og:image" content="assets/icon.webp">
+  <meta property="og:type" content="website">
+
+  <style>
+    :root {
+      --primary: #1976D2;
+      --primary-dark: #0D47A1;
+      --primary-light: #E3F2FD;
+      --accent: #00B0FF;
+      --success: #2E7D32;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --text: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: #334155;
+        --primary-light: #1E3A8A33;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .logo-text {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-github:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 64px 0 48px;
+      text-align: center;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 36px;
+    }
+
+    /* Download Box */
+    .download-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 620px;
+      margin: 0 auto 48px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .download-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+      padding: 16px 28px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #FFFFFF;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(25, 118, 210, 0.45);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      color: var(--primary);
+    }
+
+    .release-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.85rem;
+    }
+
+    .meta-item {
+      text-align: center;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Screenshots Section */
+    .screenshots-section {
+      padding: 48px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .mockup-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      text-align: center;
+    }
+
+    .mockup-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-hover);
+    }
+
+    .mockup-img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+      background: var(--bg);
+    }
+
+    .mockup-caption {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .mockup-subcaption {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Features Section */
+    .features-section {
+      padding: 48px 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .feature-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Steps Section */
+    .steps-section {
+      padding: 48px 0 64px;
+    }
+
+    .steps-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .step-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: var(--surface);
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div class="container nav">
+      <a href="#" class="logo-group">
+        <img src="assets/icon.webp" alt="Visualize PDF Logo" class="logo-img" width="44" height="44" fetchpriority="high">
+        <span class="logo-text">Visualize PDF</span>
+      </a>
+      <div class="nav-links">
+        <a href="https://github.com/yprevot/visualize-pdf" class="btn-github" target="_blank" rel="noopener">
+          <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="container">
+    <section class="hero">
+      <div class="badge-pill">
+        <span>●</span> Actualización continua con cada cambio en el repositorio
+      </div>
+      <h1 class="hero-title">El visualizador de PDF <span>más rápido y ligero</span> para Android</h1>
+      <p class="hero-desc">
+        Abre y lee documentos al instante con tecnología de renderizado híbrido nativo. Diseñado bajo las mejores prácticas de Google Play Store sin permisos invasivos.
+      </p>
+
+      <!-- Download Box -->
+      <div class="download-card">
+        <div class="download-actions">
+          <a href="visualize-pdf-latest.apk" class="btn-primary" download id="download-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Descargar APK Oficial
+          </a>
+          <a href="https://github.com/yprevot/visualize-pdf/releases" class="btn-secondary" target="_blank" rel="noopener">
+            Ver todas las versiones en GitHub Releases →
+          </a>
+        </div>
+
+        <div class="release-meta">
+          <div class="meta-item">
+            <div class="meta-label">Versión</div>
+            <div class="meta-value" id="app-version">{{VERSION}}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Tamaño</div>
+            <div class="meta-value">{{APK_SIZE}}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Compatibilidad</div>
+            <div class="meta-value">Android 7.0+ (API 24-35)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Showcase / Screenshots -->
+    <section class="screenshots-section">
+      <div class="section-header">
+        <h2 class="section-title">Capturas de Pantalla en Vivo</h2>
+        <p class="section-subtitle">Visualiza documentos en resolución nativa con total fluidez y zoom multitáctil.</p>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="mockup-card">
+          <img src="assets/screenshots/screenshot-1-welcome.png" alt="Pantalla de inicio de Visualize PDF" class="mockup-img" width="1080" height="2424" loading="lazy">
+          <div class="mockup-caption">Pantalla Principal</div>
+          <div class="mockup-subcaption">Limpia y libre de distracciones</div>
+        </div>
+
+        <div class="mockup-card">
+          <img src="assets/screenshots/screenshot-2-sample.png" alt="Documento interactivo de muestra" class="mockup-img" width="1080" height="2424" loading="lazy">
+          <div class="mockup-caption">Documento de Muestra</div>
+          <div class="mockup-subcaption">Listo para probar sin archivos previos</div>
+        </div>
+
+        <div class="mockup-card">
+          <img src="assets/screenshots/screenshot-3-rich.png" alt="Visualización de reporte PDF complejo" class="mockup-img" width="1080" height="2424" loading="lazy">
+          <div class="mockup-caption">Reportes y Gráficos</div>
+          <div class="mockup-subcaption">Máxima fidelidad tipográfica y vectorial</div>
+        </div>
+
+        <div class="mockup-card">
+          <img src="assets/screenshots/screenshot-4-landscape.png" alt="Visualización apaisada en horizontal" class="mockup-img" width="2424" height="1080" loading="lazy">
+          <div class="mockup-caption">Modo Horizontal</div>
+          <div class="mockup-subcaption">Ideal para tablets o lectura panorámica</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">¿Por qué elegir Visualize PDF?</h2>
+        <p class="section-subtitle">Construido con tecnología moderna para ofrecer rendimiento superior.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">Motor Híbrido Dual</h3>
+          <p class="feature-desc">Combina el motor nativo de Android <code>PdfRenderer</code> con <code>PDFium Core</code> para abrir cualquier PDF, incluso protegidos por contraseña o con codificaciones complejas.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3 class="feature-title">Google Play Ready</h3>
+          <p class="feature-desc">Cero permisos intrusivos. Implementa Storage Access Framework (SAF) y cumple 100% las normativas de Scoped Storage de Android 15 (Target SDK 35).</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3 class="feature-title">Caché LRU de Memoria</h3>
+          <p class="feature-desc">Renderizado asíncrono con control de memoria RAM. Olvídate de bloqueos o errores Out-Of-Memory (OOM) en documentos de cientos de páginas.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3 class="feature-title">Zoom Multitáctil</h3>
+          <p class="feature-desc">Pinch-to-zoom con límites automáticos, doble toque para centrar y desplazamiento continuo entre páginas con <code>RecyclerView</code>.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📲</div>
+          <h3 class="feature-title">Integración con el Sistema</h3>
+          <p class="feature-desc">Abre archivos directamente desde WhatsApp, Gmail, navegadores o el administrador de archivos mediante los filtros <code>VIEW</code> y <code>SEND</code>.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3 class="feature-title">Compilación Continua</h3>
+          <p class="feature-desc">Cada cambio en el código fuente compila automáticamente una nueva versión firmada del APK que se publica de forma inmediata en esta página.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation Steps -->
+    <section class="steps-section">
+      <div class="steps-card">
+        <h2 class="section-title" style="text-align: left; margin-bottom: 8px;">Instalación en 3 Simples Pasos</h2>
+        <p class="section-subtitle" style="text-align: left;">Cómo instalar el archivo APK directamente en tu teléfono o tablet Android.</p>
+        
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Descarga el archivo APK</h4>
+              <p>Haz clic en el botón superior de descarga para guardar <code>visualize-pdf-latest.apk</code> en tu dispositivo.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Permite la instalación</h4>
+              <p>Abre la notificación de descarga. Si Android te lo solicita, activa "Permitir desde esta fuente" en los ajustes de seguridad.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Abre tus documentos</h4>
+              <p>Toca "Instalar" y luego "Abrir". Ya puedes visualizar tus PDFs o seleccionarla como app predeterminada.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>Visualize PDF &bull; Código abierto bajo <a href="https://github.com/yprevot/visualize-pdf/blob/main/LICENSE" target="_blank" rel="noopener">Licencia MIT</a></p>
+      <p style="margin-top: 6px; font-size: 0.8rem; color: var(--text-muted);">
+        Compilado automáticamente vía <a href="https://github.com/yprevot/visualize-pdf/actions" target="_blank" rel="noopener">GitHub Actions</a> &bull; Última actualización: {{BUILD_DATE}} (Commit {{COMMIT_SHORT}})
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

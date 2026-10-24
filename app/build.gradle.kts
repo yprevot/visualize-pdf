@@ -10,12 +10,19 @@ android {
     // targetSdk stays at 35 (Play requirement); compileSdk may exceed it.
     compileSdk = 37
 
+    val appVersionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull()
+        ?: System.getenv("VERSION_CODE")?.toIntOrNull()
+        ?: 1
+    val appVersionName = project.findProperty("versionName")?.toString()
+        ?: System.getenv("VERSION_NAME")
+        ?: "1.0.0"
+
     defaultConfig {
         applicationId = "com.example.androidpdfviewwer"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,6 +34,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
