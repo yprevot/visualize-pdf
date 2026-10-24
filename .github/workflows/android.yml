@@ -61,14 +61,18 @@ jobs:
     - name: Run Lint Vital Release Check
       run: ./gradlew lintVitalRelease
 
-    - name: Build Signed Release APK
-      run: ./gradlew assembleRelease -PversionCode=${{ steps.version.outputs.version_code }} -PversionName=${{ steps.version.outputs.version_name }}
+    - name: Build Signed Release APK & AAB Bundle
+      run: |
+        ./gradlew assembleRelease -PversionCode=${{ steps.version.outputs.version_code }} -PversionName=${{ steps.version.outputs.version_name }}
+        ./gradlew bundleRelease -PversionCode=${{ steps.version.outputs.version_code }} -PversionName=${{ steps.version.outputs.version_name }}
 
-    - name: Package Distribution APKs
+    - name: Package Distribution APKs and AAB
       run: |
         mkdir -p dist
         cp app/build/outputs/apk/release/app-release.apk dist/visualize-pdf-${{ steps.version.outputs.release_tag }}.apk
         cp app/build/outputs/apk/release/app-release.apk dist/visualize-pdf-latest.apk
+        cp app/build/outputs/bundle/release/app-release.aab dist/visualize-pdf-${{ steps.version.outputs.release_tag }}.aab
+        cp app/build/outputs/bundle/release/app-release.aab dist/visualize-pdf-latest.aab
         ls -lh dist/
 
     - name: Upload APKs as Artifact
@@ -98,6 +102,8 @@ jobs:
           files: |
             dist/visualize-pdf-${{ needs.build.outputs.release_tag }}.apk
             dist/visualize-pdf-latest.apk
+            dist/visualize-pdf-${{ needs.build.outputs.release_tag }}.aab
+            dist/visualize-pdf-latest.aab
           generate_release_notes: true
           make_latest: true
 

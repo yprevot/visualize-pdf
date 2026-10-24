@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 // NOTE (AGP 9+): no Kotlin plugin here — AGP 9 compiles Kotlin natively
 // and derives the Kotlin jvmTarget from compileOptions (Java 17).
 plugins {
@@ -18,13 +21,52 @@ android {
         ?: "1.0.0"
 
     defaultConfig {
-        applicationId = "com.example.androidpdfviewwer"
+        applicationId = "com.yprevot.visualizepdf"
         minSdk = 24
         targetSdk = 35
         versionCode = appVersionCode
         versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        create("release") {
+            val storeFilePath = keystoreProperties.getProperty("storeFile")
+                ?: project.findProperty("storeFile")?.toString()
+                ?: System.getenv("KEYSTORE_FILE")
+            val storePass = keystoreProperties.getProperty("storePassword")
+                ?: project.findProperty("storePassword")?.toString()
+                ?: System.getenv("KEYSTORE_PASSWORD")
+            val keyAl = keystoreProperties.getProperty("keyAlias")
+                ?: project.findProperty("keyAlias")?.toString()
+                ?: System.getenv("KEY_ALIAS")
+            val keyPass = keystoreProperties.getProperty("keyPassword")
+                ?: project.findProperty("keyPassword")?.toString()
+                ?: System.getenv("KEY_PASSWORD")
+
+            if (storeFilePath != null && file(storeFilePath).exists()) {
+                storeFile = file(storeFilePath)
+                storePassword = storePass
+                keyAlias = keyAl
+                keyPassword = keyPass
+            } else {
+                // Fallback a debug keystore para desarrollo local o builds sin clave de producción
+                val debugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+                if (debugKeystore.exists()) {
+                    storeFile = debugKeystore
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
+                }
+            }
+        }
     }
 
     buildTypes {
@@ -34,7 +76,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
