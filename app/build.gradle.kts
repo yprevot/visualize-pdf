@@ -15,15 +15,15 @@ android {
 
     val appVersionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull()
         ?: System.getenv("VERSION_CODE")?.toIntOrNull()
-        ?: 1
+        ?: 2
     val appVersionName = project.findProperty("versionName")?.toString()
         ?: System.getenv("VERSION_NAME")
-        ?: "1.0.0"
+        ?: "1.0.1"
 
     defaultConfig {
         applicationId = "com.yprevot.visualizepdf"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = appVersionCode
         versionName = appVersionName
 
@@ -71,11 +71,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
             signingConfig = signingConfigs.getByName("release")
         }
     }
