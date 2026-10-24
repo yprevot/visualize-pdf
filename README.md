@@ -1,11 +1,26 @@
 # Visor PDF para Android (Google Play Ready) 📄📱
 
-[![Android CI](https://github.com/yprevot/visualize-pdf/actions/workflows/android.yml/badge.svg)](https://github.com/yprevot/visualize-pdf/actions)
+[![Android CI/CD](https://github.com/yprevot/visualize-pdf/actions/workflows/android.yml/badge.svg)](https://github.com/yprevot/visualize-pdf/actions)
+[![Descargar APK](https://img.shields.io/badge/Descargar-APK%20(Última%20Versión)-brightgreen?logo=android)](https://yprevot.github.io/visualize-pdf/visualize-pdf-latest.apk)
+[![Página Web](https://img.shields.io/badge/Sitio%20Web-yprevot.github.io-blue?logo=googlechrome)](https://yprevot.github.io/visualize-pdf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-35-blue.svg)](https://developer.android.com/about/versions/15)
 [![Min SDK](https://img.shields.io/badge/Min%20SDK-24-green.svg)](https://developer.android.com/about/versions/nuget/android-7.0)
 
 Aplicación nativa de Android moderna, ligera y ultrarrápida para visualizar documentos en formato PDF. Desarrollada en **Kotlin** cumpliendo estrictamente las políticas de seguridad y almacenamiento de **Google Play Store**.
+
+---
+
+## 🌐 Descarga Directa y Página Web
+
+Puedes acceder a la página web del proyecto y descargar la última versión compilada:
+
+👉 **[https://yprevot.github.io/visualize-pdf/](https://yprevot.github.io/visualize-pdf/)**
+
+- 📲 **[Descargar visualize-pdf-latest.apk](https://yprevot.github.io/visualize-pdf/visualize-pdf-latest.apk)**
+- 📦 **[Ver historial completo en GitHub Releases](https://github.com/yprevot/visualize-pdf/releases)**
+
+> **Compilación continua:** Con cada commit en la rama `main`, GitHub Actions genera automáticamente una nueva versión firmada del APK, crea su Release y la despliega directamente dentro de la página web.
 
 ---
 
