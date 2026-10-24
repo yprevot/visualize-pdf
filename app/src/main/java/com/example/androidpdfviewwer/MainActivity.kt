@@ -303,6 +303,11 @@ class MainActivity : AppCompatActivity() {
                 else Toast.makeText(this, "Abre un PDF primero para compartirlo", Toast.LENGTH_SHORT).show()
                 true
             }
+            R.id.action_privacy -> {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_url)))
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

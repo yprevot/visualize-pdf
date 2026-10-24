@@ -22,4 +22,6 @@
     <string name="zoom_in">Aumentar Zoom</string>
     <string name="zoom_out">Disminuir Zoom</string>
     <string name="reset_zoom">Restablecer Zoom</string>
+    <string name="privacy_policy">Política de Privacidad</string>
+    <string name="privacy_policy_url">https://yprevot.github.io/visualize-pdf/privacy-policy.html</string>
 </resources>
