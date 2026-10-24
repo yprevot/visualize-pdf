@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidad — Visualize PDF</title>
+  <meta name="description" content="Política de privacidad de Visualize PDF (com.yprevot.visualizepdf). Aplicación 100% privada, sin recopilación de datos ni conexión a internet.">
+  <meta name="theme-color" content="#1976D2">
+  <link rel="icon" type="image/webp" href="assets/icon.webp">
+
+  <style>
+    :root {
+      --primary: #1976D2;
+      --primary-dark: #0D47A1;
+      --primary-light: #E3F2FD;
+      --accent: #00B0FF;
+      --success: #2E7D32;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --radius: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --text: #F8FAFC;
+        --text-muted: #94A3B8;
+        --border: #334155;
+        --primary-light: #1E3A8A33;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+    }
+
+    .logo-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+
+    .content-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 40px;
+      margin: 40px 0 60px 0;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 32px 0 12px 0;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    p, ul {
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    ul {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .highlight-box {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      margin: 24px 0;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .lang-divider {
+      margin: 48px 0;
+      border-top: 2px dashed var(--border);
+      text-align: center;
+      position: relative;
+    }
+
+    .lang-divider span {
+      background: var(--surface);
+      position: relative;
+      top: -14px;
+      padding: 0 16px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background: var(--surface);
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-group">
+        <img src="assets/icon.webp" alt="Visualize PDF Icon" class="logo-img">
+        <span class="logo-text">Visualize PDF</span>
+      </a>
+      <a href="index.html" class="nav-link">&larr; Volver al inicio</a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="content-card">
+      <span class="app-badge">ID del Paquete: com.yprevot.visualizepdf</span>
+      <h1>Política de Privacidad</h1>
+      <div class="meta">
+        <strong>Última actualización:</strong> 24 de octubre de 2026 &bull; Vigente a partir del lanzamiento inicial
+      </div>
+
+      <div class="highlight-box">
+        <p>🔒 <strong>Resumen de Privacidad:</strong> <em>Visualize PDF</em> es una aplicación de visualización de documentos 100% local e independiente. No recopilamos, no almacenamos, no transmitimos ni compartimos ninguna información personal, analítica ni contenido de tus archivos.</p>
+      </div>
+
+      <h2>1. Información General y Responsable</h2>
+      <p>
+        Esta Política de Privacidad describe el tratamiento de datos en la aplicación móvil <strong>Visualize PDF</strong> (identificador de aplicación: <code>com.yprevot.visualizepdf</code>), desarrollada y mantenida por <strong>yprevot</strong> como un proyecto de software libre y gratuito.
+      </p>
+
+      <h2>2. Datos Personales que Recopilamos</h2>
+      <p>
+        <strong>Ninguno.</strong> Visualize PDF <strong>no recopila</strong> ningún tipo de información identificable, personal ni sensible, incluyendo pero no limitado a:
+      </p>
+      <ul>
+        <li>Nombres, correos electrónicos, números de teléfono o direcciones.</li>
+        <li>Identificadores publicitarios, de dispositivo o direcciones IP.</li>
+        <li>Datos de ubicación geográfica (GPS o red).</li>
+        <li>Registros de actividad, telemetría o estadísticas de uso.</li>
+      </ul>
+
+      <h2>3. Tratamiento de Documentos y Archivos PDF</h2>
+      <p>
+        Cuando abres un archivo PDF en Visualize PDF (a través del selector de archivos de Android o abriéndolo desde otra app como WhatsApp, Gmail o el Administrador de Archivos):
+      </p>
+      <ul>
+        <li>El archivo se procesa <strong>única y exclusivamente en la memoria local (RAM) de tu propio dispositivo</strong> con el fin de renderizar y mostrar las páginas en tu pantalla.</li>
+        <li>Los documentos <strong>nunca se suben, transmiten ni envían a ningún servidor externo ni en la nube</strong>.</li>
+        <li>La aplicación ni siquiera solicita ni posee permisos de acceso a Internet (<code>android.permission.INTERNET</code>).</li>
+      </ul>
+
+      <h2>4. Permisos del Dispositivo</h2>
+      <p>
+        La aplicación utiliza las APIs nativas de Android de acceso seguro a contenidos (<em>Storage Access Framework</em> y <em>FileProvider</em>):
+      </p>
+      <ul>
+        <li><strong>Acceso a almacenamiento:</strong> Solo se accede a los archivos PDF que el usuario selecciona conscientemente para visualizar. No se realiza escaneo general ni lectura de otros directorios o archivos ajenos.</li>
+      </ul>
+
+      <h2>5. Servicios y SDKs de Terceros</h2>
+      <p>
+        Visualize PDF <strong>no integra</strong> SDKs de publicidad, bibliotecas de seguimiento publicitario (trackers), herramientas de analítica comercial (como Google Analytics, Firebase Analytics, Facebook SDK, etc.) ni pasarelas de pago.
+      </p>
+
+      <h2>6. Privacidad de Menores</h2>
+      <p>
+        Al no recopilar ningún tipo de dato personal, Visualize PDF cumple estrictamente con las leyes de protección de la privacidad infantil (incluida la COPPA y el RGPD). Es totalmente apta y segura para usuarios de todas las edades.
+      </p>
+
+      <h2>7. Seguridad de la Información</h2>
+      <p>
+        Dado que todos los datos y documentos permanecen confinados en el entorno seguro de ejecución de tu propio dispositivo Android y no existe comunicación externa, no existe riesgo de filtración de datos desde nuestros sistemas.
+      </p>
+
+      <h2>8. Cambios a esta Política de Privacidad</h2>
+      <p>
+        Podemos actualizar esta Política de Privacidad en caso de añadir nuevas funcionalidades al visor. Cualquier cambio será publicado en este mismo enlace y reflejado en el código abierto del repositorio.
+      </p>
+
+      <h2>9. Contacto y Código Fuente</h2>
+      <p>
+        El código fuente de Visualize PDF es transparente y auditable públicamente. Si tienes dudas, sugerencias o inquietudes sobre esta política, puedes contactarnos o abrir un reporte a través de:
+      </p>
+      <ul>
+        <li><strong>Repositorio GitHub:</strong> <a href="https://github.com/yprevot/visualize-pdf" target="_blank" rel="noopener">https://github.com/yprevot/visualize-pdf</a></li>
+        <li><strong>Reportes y consultas:</strong> <a href="https://github.com/yprevot/visualize-pdf/issues" target="_blank" rel="noopener">https://github.com/yprevot/visualize-pdf/issues</a></li>
+      </ul>
+
+      <!-- English Section for Google Play International Review -->
+      <div class="lang-divider">
+        <span>English Version / International Review</span>
+      </div>
+
+      <span class="app-badge">Application ID: com.yprevot.visualizepdf</span>
+      <h1 style="font-size: 1.8rem;">Privacy Policy</h1>
+      <div class="meta">
+        <strong>Last updated:</strong> October 24, 2026
+      </div>
+
+      <p>
+        <strong>Visualize PDF</strong> ("we", "our", or "the app", package name: <code>com.yprevot.visualizepdf</code>) is an open-source, fast, and privacy-first PDF viewer for Android devices.
+      </p>
+
+      <h2>1. Information Collection and Use</h2>
+      <p>
+        We do <strong>not</strong> collect, store, transmit, or share any personal information, usage analytics, device identifiers, or user files.
+      </p>
+
+      <h2>2. Document Handling</h2>
+      <p>
+        PDF files selected or opened by the user are rendered entirely on-device in local memory using Android's native rendering APIs and open-source PDFium engine. No document data is ever uploaded to external servers or transmitted across the network. The application does not declare nor require internet access permissions (<code>android.permission.INTERNET</code>).
+      </p>
+
+      <h2>3. Third-Party Services</h2>
+      <p>
+        The app contains zero third-party tracking, analytics, or advertising frameworks.
+      </p>
+
+      <h2>4. Contact Us</h2>
+      <p>
+        For inquiries or to inspect the source code, please visit: <a href="https://github.com/yprevot/visualize-pdf" target="_blank" rel="noopener">https://github.com/yprevot/visualize-pdf</a>.
+      </p>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>Visualize PDF &bull; Código abierto bajo <a href="https://github.com/yprevot/visualize-pdf/blob/main/LICENSE" target="_blank" rel="noopener">Licencia MIT</a></p>
+      <p style="margin-top: 6px;">
+        <a href="index.html">Inicio</a> &bull; <a href="privacy-policy.html">Política de Privacidad</a> &bull; <a href="https://github.com/yprevot/visualize-pdf" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
