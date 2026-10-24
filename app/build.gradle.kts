@@ -15,10 +15,10 @@ android {
 
     val appVersionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull()
         ?: System.getenv("VERSION_CODE")?.toIntOrNull()
-        ?: 2
+        ?: 3
     val appVersionName = project.findProperty("versionName")?.toString()
         ?: System.getenv("VERSION_NAME")
-        ?: "1.0.1"
+        ?: "1.0.2"
 
     defaultConfig {
         applicationId = "com.yprevot.visualizepdf"
