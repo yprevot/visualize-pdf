@@ -45,6 +45,7 @@ local.properties
 *.key
 google-services.json
 secrets.properties
+keystore.properties
 
 # OS generated files
 .DS_Store
